@@ -13,6 +13,7 @@ router.get('/', function(req, res, next) {
 /* GET one user */
 router.get('/:userid', (req, res, next) => {
   var userId = req.params.userid;
+  console.debug("UserId: " + userId);
   userDao.getUser(userId, (user) => {
     res.json(user);
   })
@@ -21,6 +22,7 @@ router.get('/:userid', (req, res, next) => {
 /* POST add new user */
 router.post('/', (req, res, next) => {
   var user = req.body;
+  console.debug("User: " + JSON.stringify(user));
   userDao.addUser(user, (result) => {
     res.send("User added:\n" + result);
   })
@@ -29,6 +31,7 @@ router.post('/', (req, res, next) => {
 /* PUT update user */
 router.put('/', (req, res, next) => {
   var user = req.body;
+  console.debug("User: " + JSON.stringify(user));
   userDao.updateUser(user, (result) => {
     res.send("User updated:\n" + result);
   })
@@ -37,6 +40,7 @@ router.put('/', (req, res, next) => {
 /* DELETE user */
 router.delete('/:userid', (req, res, next) => {
   var userId = req.params.userid;
+  console.debug("UserId: " + userId);
   userDao.removeUser(userId, (result) =>  {
     res.send("User with id has been deleted");
   })
