@@ -34,10 +34,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Add headers
 app.use('/*', function (req, res, next) {
-  console.log("Call this to set CORS");
   // // Website you wish to allow to connect
-  var allowedOrigins = ['http://localhost:3000/', 'https://obscure-plateau-83840.herokuapp.com/'];
+  var allowedOrigins = ['http://localhost:3000', 'https://obscure-plateau-83840.herokuapp.com'];
   var origin = req.headers.origin;
+  console.log("Invoking from: " + origin);
   if (allowedOrigins.indexOf(origin) > -1) {
        res.setHeader('Access-Control-Allow-Origin', origin);
   }
