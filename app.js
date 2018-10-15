@@ -53,12 +53,13 @@ app.use(function(err, req, res, next) {
 
 // Add headers
 app.use(function (req, res, next) {
-  // Website you wish to allow to connect
-  var allowedOrigins = ['http://localhost:3000/', 'https://obscure-plateau-83840.herokuapp.com/'];
-  var origin = req.headers.origin;
-  if (allowedOrigins.indexOf(origin) > -1) {
-       res.setHeader('Access-Control-Allow-Origin', origin);
-  }
+  // // Website you wish to allow to connect
+  // var allowedOrigins = ['http://localhost:3000/', 'https://obscure-plateau-83840.herokuapp.com/'];
+  // var origin = req.headers.origin;
+  // if (allowedOrigins.indexOf(origin) > -1) {
+  //      res.setHeader('Access-Control-Allow-Origin', origin);
+  // }
+  res.setHeader('Access-Control-Allow-Origin', "*");
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   // Request headers you wish to allow
