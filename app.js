@@ -32,11 +32,8 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
 // Add headers
-app.use(function (req, res, next) {
+app.use('/*', function (req, res, next) {
   console.log("Call this to set CORS");
   // // Website you wish to allow to connect
   // var allowedOrigins = ['http://localhost:3000/', 'https://obscure-plateau-83840.herokuapp.com/'];
@@ -55,6 +52,9 @@ app.use(function (req, res, next) {
   // Pass to next layer of middleware
   next();
 });
+
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
