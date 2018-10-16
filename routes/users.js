@@ -24,7 +24,7 @@ router.post('/', (req, res, next) => {
   var user = req.body;
   console.debug("User: " + JSON.stringify(user));
   userDao.addUser(user, (result) => {
-    res.send("User added:\n" + result);
+    res.json(result);
   })
 });
 
@@ -33,7 +33,7 @@ router.put('/', (req, res, next) => {
   var user = req.body;
   console.debug("User: " + JSON.stringify(user));
   userDao.updateUser(user, (result) => {
-    res.send("User updated:\n" + result);
+    res.json(result);
   })
 });
 
