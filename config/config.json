@@ -1,0 +1,9 @@
+{
+    "db":{
+        "url":"ds123259.mlab.com:23259/react-learning",
+        "user":"admin",
+        "pw":"Admin12345"
+    },
+    "expiredIn":"3600",
+    "allowedSites":["http://localhost:3000", "https://obscure-plateau-83840.herokuapp.com"]
+}

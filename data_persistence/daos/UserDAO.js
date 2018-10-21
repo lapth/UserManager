@@ -7,14 +7,24 @@ class UserDAO {
         console.debug('Init UserDAO');
     }
 
+    /**
+     * Add new user, the password should be encrypted already in service layer.
+     * @param {*} user
+     * @param {*} callBack 
+     */
     addUser(user, callBack) {
         // convert to UserModel
         var userModel = (user instanceof UserModel) ? user : new UserModel(user);
+        // Just ensure the id has been generated.
         userModel._id = uuidv1();
-        userModel.save(function(err, result) {
-            if (err) return console.error(err);
+        userModel.save((err, result) => {
+            if (err) {
+                console.error(err);
+                callBack(err, null);
+                return;
+            }
             console.debug('New User has been saved!');
-            callBack(result);
+            callBack(null, result);
         });
     };
 
@@ -22,43 +32,70 @@ class UserDAO {
         // Use findById instead of find function
         UserModel.findById({_id: oldUser._id}, (err, user) => {
             if (err) {
-                return console.error(err);
+                console.error(err);
+                callBack(err, null);
+                return;
             }
 
-            user.hoTen = oldUser.hoTen;
-            user.tel = oldUser.tel;
-            user.quyen = oldUser.quyen;
+            user.firstName = oldUser.firstName;
+            user.lastName = oldUser.lastName;
+            user.group = oldUser.group;
 
             user.save(function(err, result) {
-                if (err) return console.error(err);
+                if (err) {
+                    console.error(err);
+                    callBack(err, null);
+                    return;
+                }
                 console.debug('User has been updated!');
-                callBack(result);
+                callBack(null, result);
             });
         });
     }
 
-    removeUser(userId, callBack) {
-        UserModel.findByIdAndRemove(userId, (err, result) => {
+    removeUser(id, callBack) {
+        UserModel.findByIdAndRemove(id, (err, result) => {
             if (err) {
-                return console.error(err);
+                console.error(err);
+                callBack(err, null);
+                return;
             }
             console.debug("User has been removed");
-            callBack(result);
+            callBack(null, result);
         })
     }
 
-    getUser(userId, callBack) {
-        UserModel.find({_id: userId}, (err, users) => {
+    getById(id, callBack) {
+        UserModel.find({_id: id}, (err, users) => {
             if (err) {
                 console.error(err);
-                return null;
+                callBack(err, null);
+                return;
             }
 
             if (users.length > 1) {
                 console.error("There is something wrong with your DB");
                 return null;
             }
-            callBack(users);
+            console.debug("One user has been found");
+            callBack(null, users);
+        });
+    }
+
+    getUserId(userId, callBack) {
+        UserModel.find({_id: userId}, (err, users) => {
+            if (err) {
+                console.error(err);
+                callBack(err, null);
+                return;
+            }
+
+            if (users.length > 1) {
+                console.error("There is something wrong with your DB");
+                return null;
+            }
+            console.debug("One user has been found");
+            callBack(null, users);
         });
     }
 
@@ -66,9 +103,11 @@ class UserDAO {
         UserModel.find({}, (err, users) => {
             if (err) {
                 console.error(err);
-                return null;
+                callBack(err, null);
+                return;
             }
-            callBack(users);
+            console.debug("There were %d user(s) found", users.length);
+            callBack(null, users);
         })
     }
 }
