@@ -3,129 +3,97 @@ const uuidv1 = require('uuid/v1');
 var UserModel = require('../models/User');
 
 class UserDAO {
+    // Moogose is not full Promise => wrap moogose's non-Promise function into Promise
     constructor() {
         console.debug('Init UserDAO');
     }
-
+    
     /**
      * Add new user, the password should be encrypted already in service layer.
      * @param {*} user
-     * @param {*} callBack 
      */
-    addUser(user, callBack) {
+    async addUser(user) {
         // convert to UserModel
         var userModel = (user instanceof UserModel) ? user : new UserModel(user);
         // Just ensure the id has been generated.
         userModel._id = uuidv1();
-        userModel.save((err, result) => {
-            if (err) {
-                console.error(err);
-                callBack(err, null);
-                return;
-            }
-            console.debug('New User has been saved!');
-            callBack(null, result);
-        });
+        return await userModel.save();
     };
 
-    updateUser(oldUser, callBack) {
+    async updateUser(newUser) {
         // Use findById instead of find function
-        UserModel.findById({_id: oldUser._id}, (err, user) => {
-            if (err) {
-                console.error(err);
-                callBack(err, null);
-                return;
-            }
+        var user = await UserModel.findById({_id: newUser._id}).exec();
+        
+        user.firstName = newUser.firstName;
+        user.lastName = newUser.lastName;
+        user.group = newUser.group;
 
-            user.firstName = oldUser.firstName;
-            user.lastName = oldUser.lastName;
-            user.group = oldUser.group;
-
-            user.save(function(err, result) {
-                if (err) {
-                    console.error(err);
-                    callBack(err, null);
-                    return;
-                }
-                console.debug('User has been updated!');
-                callBack(null, result);
-            });
-        });
+        return await user.save();
     }
 
-    removeUser(id, callBack) {
-        UserModel.findByIdAndRemove(id, (err, result) => {
-            if (err) {
-                console.error(err);
-                callBack(err, null);
-                return;
-            }
-            console.debug("User has been removed");
-            callBack(null, result);
-        })
+    async updateUserPassword(id, newPassword) {
+        // Use findById instead of find function
+        var user = await UserModel.findById({_id: id}).exec();
+
+        // This password is already encrypted.
+        user.password = newPassword;
+
+        return await user.save();
     }
 
-    getById(id, callBack) {
-        UserModel.find({_id: id}, (err, users) => {
-            if (err) {
-                console.error(err);
-                callBack(err, null);
-                return;
-            }
-
-            if (users.length > 1) {
-                console.error("There is something wrong with your DB");
-                return null;
-            }
-            console.debug("One user has been found");
-            callBack(null, users);
-        });
+    async removeUser(id) {
+        return await UserModel.findByIdAndRemove(id).exec();
     }
 
-    getUserId(userId, callBack) {
-        UserModel.find({_id: userId}, (err, users) => {
-            if (err) {
-                console.error(err);
-                callBack(err, null);
-                return;
-            }
-
-            if (users.length > 1) {
-                console.error("There is something wrong with your DB");
-                return null;
-            }
-            console.debug("One user has been found");
-            callBack(null, users);
-        });
+    async getById(id) {
+        return await UserModel.find({_id: id}).exec();
     }
 
-    getAllUsers(callBack) {
-        UserModel.find({}, (err, users) => {
-            if (err) {
-                console.error(err);
-                callBack(err, null);
-                return;
-            }
-            console.debug("There were %d user(s) found", users.length);
-            callBack(null, users);
-        })
+   async getUserById(userId) {
+        return await UserModel.find({userId: userId}).exec();
+    }
+
+    async getAllUsers() {
+        return await UserModel.find({}).exec();
     }
 }
 
 // var userDao = new UserDAO();
 // var user = {
-//     _id: "89bd9a60-cf5e-11e8-8c8a-b9875e529cc4",
-//     hoTen: "User updated",
-//     tel: "123456789",
-//     quyen: 1
+//     //_id: "4069ce80-e1e0-11e8-a9d9-65fccfbf6c03",
+//     firstName: "firstName 1",
+//     lastName: "lastName 1",
+//     group: "group 1",
+//     password: "password 1",
+//     userId: "userId 1"
 // };
-// userDao.addUser(user, (result) => {
-//     console.log("User added: " + result);
+// userDao.addUser(user).then(val => {
+//     console.log("User added: " + val);
 // });
-// userDao.getUser("89bd9a60-cf5e-11e8-8c8a-b9875e529cc4", (users) => {
+// userDao.getById("4069ce80-e1e0-11e8-a9d9-65fccfbf6c03").then(users => {
 //     console.log("User: " + users);
 // });
-// userDao.updateUser(user, (users) => {
+// userDao.getUserById("userId 1").then(users => {
 //     console.log("User: " + users);
+// });
+// var user1 = {
+//     _id: "4069ce80-e1e0-11e8-a9d9-65fccfbf6c03",
+//     firstName: "firstName 2",
+//     lastName: "lastName 2",
+//     group: "group 2",
+//     password: "password 2",
+//     userId: "userId 2"
+// };
+// userDao.updateUser(user1).then(users => {
+//     console.log("User: " + users);
+// });
+// userDao.updateUserPassword("4069ce80-e1e0-11e8-a9d9-65fccfbf6c03", "new pass").then(users => {
+//     console.log("User: " + users);
+// });
+// userDao.getAllUsers().then(users => {
+//     console.log("Users: " + users);
+// });
+// userDao.removeUser("4069ce80-e1e0-11e8-a9d9-65fccfbf6c03").then(users => {
+//     console.log("Users: " + users);
 // });
 module.exports = UserDAO;
